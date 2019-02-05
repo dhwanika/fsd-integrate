@@ -2,7 +2,8 @@
 
 import { all, fork } from 'redux-saga/effects';
 
-import { watchGetTasks, watchPostTasks , watchPutTasks} from './taskSagas';
+import { watchGetTasks, watchPostTasks , watchPutTasks, watchGetUsers,
+  watchPostUsers, watchGetProjects, watchPostProjects} from './taskSagas';
 
  
 
@@ -12,7 +13,11 @@ export default function* rootSaga() {
 
     fork(watchGetTasks),
     fork(watchPostTasks),
-    fork(watchPutTasks)
+    fork(watchPutTasks),
+    fork(watchGetUsers),
+    fork(watchPostUsers),
+    fork(watchGetProjects),
+    fork(watchPostProjects)
 
   ]);
 

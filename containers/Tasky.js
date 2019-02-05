@@ -21,8 +21,13 @@ class Tasky extends Component {
         this.selectTask=this.selectTask.bind(this);
     }
     componentDidMount(){
-        const {getTask}=this.props;
+        const {getTask, getUser, getProject}=this.props;
         getTask();
+        var name='';
+        var dir='';
+        var url='';
+        getUser(url);
+        getProject();
     }
     CallbackEdit = (task) => {
         debugger;
@@ -30,6 +35,13 @@ class Tasky extends Component {
             editGroup: true,
             taskDetails:task
         });
+    }
+    callbackSortContainer=(name,dir)=>{
+        const {getUser}=this.props;
+        var nameFinal=name;
+        var directn=dir;
+        var url=`?sort=${nameFinal}&sortDirection=${directn}`;
+        getUser(url);
     }
     selectTask=(event,type) =>{
         if(type==='add'){
@@ -73,7 +85,7 @@ this.setState({
     }
     }
     render() {
-const {taskList}= this.props;
+const {taskList, userList, projectList}= this.props;
         return (
             <div>
                 <h1>Task Manager</h1>
@@ -94,7 +106,7 @@ const {taskList}= this.props;
     <div className="row paddingLeft30">
     <div className="col-md-12">
 {this.state.addTask?<AddTask/>:this.state.viewTask?<ViewTask callbackContainer={this.CallbackEdit} taskList={taskList}/>:
-this.state.addProject?<AddProject/>:this.state.addUser?<AddUser/>:''}
+this.state.addProject?<AddProject userList={userList} projectList={projectList}/>:this.state.addUser?<AddUser userList={userList} callbackSortContainer={this.callbackSortContainer}/>:''}
         </div>
         </div>
   </div>):
@@ -114,7 +126,9 @@ this.state.addProject?<AddProject/>:this.state.addUser?<AddUser/>:''}
     }
 }
 const mapStateToProps = (state) => ({
-    taskList:state.taskList
+    taskList:state.taskList,
+    userList:state.userList,
+    projectList:state.projectList
 });
 
 
@@ -122,5 +136,6 @@ const mapActionToProps = ({
     /*createTask,updateTask,setPriorityFilter,setSearchText,deleteTask,*/
 });
 
-export default connect(mapStateToProps, {getTask:actions.getTasksAction})(Tasky);
+export default connect(mapStateToProps, {getTask:actions.getTasksAction, getUser:actions.getUsersAction, 
+    getProject:actions.getProjectsAction})(Tasky);
 

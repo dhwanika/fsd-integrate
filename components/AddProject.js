@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import mockData from './mockjson.json';
+import moment from 'moment';
+import { connect } from 'react-redux';
+import * as actions from '../actions/taskAction';
 
 class AddProject extends Component {
    constructor(){
@@ -15,7 +18,8 @@ class AddProject extends Component {
             displaymanagerPopup:false,
             managerSelected:false,
             managerSelectedValue:'',
-            searchProject:''
+            searchProject:'',
+            managerId:''
         }
         this.projectChange=this.projectChange.bind(this);
         this.priorityChange=this.priorityChange.bind(this);
@@ -27,6 +31,21 @@ class AddProject extends Component {
         this.sendManagerName=this.sendManagerName.bind(this);
         this.nameSelect=this.nameSelect.bind(this);
         this.projectSearchChange=this.projectSearchChange.bind(this);
+        this.addproject=this.addproject.bind(this);
+    }
+    addproject=()=>{
+      debugger;
+      var postDataOfProject=
+      {
+        "projectName": this.state.project,
+        "startDate": this.state.startDate?this.state.startDate:moment(),
+        "endDate": this.state.endDate?this.state.endDate:moment().add(1, 'days'),
+        "priority": this.state.priority,
+        "manager":this.state.managerId
+    }
+      const {postProject}=this.props;
+      postProject(postDataOfProject);
+window.location.reload();
     }
     projectSearchChange=(event)=>{
         this.setState({
@@ -34,10 +53,12 @@ class AddProject extends Component {
           });
       }
     nameSelect=(event)=>{
+      debugger;
         this.setState({
             managerSelected:true,
             managerSelectedValue:event.target.value,
-            manager:event.target.value
+            manager:event.target.value,
+            managerId:event.target.name
         })
     }
     sendManagerName=(searchResultsSelect)=>{
@@ -127,16 +148,16 @@ this.setState({
               {project.projectName}
             </div>
             <div className="col-md-1">
-            {project.tasks}
+            {project.projectId}
             </div>
             <div className="col-md-1">
-              {project.completed}
+            {moment(project.startDate)<moment()?'No':'Yes'}
             </div>
             <div className="col-md-2">
-               {project.start}
+            {moment(project.startDate).format('YYYY-MM-DD')}
             </div>
             <div className="col-md-2">
-               {project.end}
+            {moment(project.endDate).format('YYYY-MM-DD')}
             </div>
             <div className="col-md-2">
                {project.priority}
@@ -152,6 +173,7 @@ this.setState({
           
               }
 render() {
+  const {projectList, userList}=this.props;
 return (
     <React.Fragment>
     <Modal show={this.state.displaymanagerPopup} onHide={this.findManager}>
@@ -161,10 +183,10 @@ return (
     <Modal.Body>
       <h4>List of available Managers</h4>
       <div>
-          {mockData.managerSearch.map((user) =>
+          {userList.userList.filter(this.state.manager ? x => x.firstName.includes(this.state.manager) : x => x).map((user) =>
           <React.Fragment>
-          <input type="checkbox" name="nameSelect" value={user.fName} onClick={this.nameSelect}/>
-          {user.fName}
+          <input type="checkbox" name={user.empId} value={user.firstName} onClick={this.nameSelect}/>
+          {user.firstName}
           <br></br>
           </React.Fragment>
         )
@@ -235,7 +257,7 @@ return (
       
     </div>
     <div className="col-md-1">
-      <button type="button" class="btn btn-primary">Add</button>
+      <button type="button" class="btn btn-primary" onClick={()=>{this.addproject()}}>Add</button>
     </div>
     <div className="col-md-10">
       <button type="button" class="btn btn-primary" onClick={()=>{this.reset()}}>Reset</button>
@@ -261,8 +283,14 @@ return (
     <button type="button" class="btn btn-primary">Completed</button>
     </div>
     </div>
-    {this.projectList(mockData.projectDetails)}
+    {this.projectList(projectList.projectList)}
    </React.Fragment> 
 );
    }}
-export default AddProject;
+
+   const mapStateToProps = (state) => ({
+    
+});
+
+   export default connect(mapStateToProps, {postProject:actions.postProjectsAction})(AddProject);
+//export default AddProject;

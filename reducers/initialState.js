@@ -2,7 +2,11 @@ const initialState = {
     
     taskList:[],
     taskInsert:[] ,
-    taskUpdate:[]   
+    taskUpdate:[],
+    userList:[],
+    userInsert:[],
+    projectList:[],
+    projectInsert:[]
     };
     
     export default initialState;
